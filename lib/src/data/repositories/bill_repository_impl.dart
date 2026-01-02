@@ -11,59 +11,9 @@ class BillRepositoryImpl implements BillRepository {
 
   final LocalStorage _storage;
 
-  Future<void> _ensureSeeded() async {
-    final raw = await _storage.loadBills();
-    if (raw.isNotEmpty) return;
-    final now = DateTime.now();
-    final seed = [
-      BillModel(
-        id: 1,
-        name: 'Tagihan Listrik',
-        amount: 450000,
-        dueDate: DateTime(now.year, now.month, 5),
-        status: BillStatus.overdue,
-        categoryId: 1,
-        createdAt: now,
-        updatedAt: now,
-      ),
-      BillModel(
-        id: 2,
-        name: 'Tagihan Air',
-        amount: 280000,
-        dueDate: DateTime(now.year, now.month, 13),
-        status: BillStatus.unpaid,
-        categoryId: 1,
-        createdAt: now,
-        updatedAt: now,
-      ),
-      BillModel(
-        id: 3,
-        name: 'Tagihan Internet',
-        amount: 399000,
-        dueDate: DateTime(now.year, now.month, 23),
-        status: BillStatus.unpaid,
-        categoryId: 1,
-        createdAt: now,
-        updatedAt: now,
-      ),
-      BillModel(
-        id: 4,
-        name: 'Tagihan Asuransi',
-        amount: 750000,
-        dueDate: DateTime(now.year, now.month, 8),
-        status: BillStatus.paid,
-        categoryId: 2,
-        createdAt: now,
-        updatedAt: now,
-      ),
-    ];
-    await _storage.saveBills(seed.map((e) => e.toMap()).toList());
-  }
-
   @override
   Future<Either<String, List<BillEntity>>> getAll() async {
     try {
-      await _ensureSeeded();
       final raw = await _storage.loadBills();
       final items = raw.map(BillModel.fromMap).map((e) => e.toEntity()).toList();
       return Right(items);
